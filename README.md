@@ -1,4 +1,4 @@
-# 传媒人的 Vibe Coding 指南
+# Vibe Coding 指南
 
 > 用 Claude Code 做传媒人里少有的技术加成——视听素材处理、广告分析、可视化仪表盘、自动化流程
 
