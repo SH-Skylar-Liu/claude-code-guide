@@ -23,13 +23,15 @@
 
 1. [安装配置（15分钟）](#1-安装配置)
 2. [Vibe Coding 基本用法](#2-vibe-coding-基本用法)
-3. [模块一：视听素材批量处理](#3-模块一视听素材批量处理)
-4. [模块二：广告内容分析](#4-模块二广告内容分析)
-5. [模块三：Streamlit 交互仪表盘](#5-模块三streamlit-交互仪表盘)
-6. [模块四：自动化 Pipeline](#6-模块四自动化-pipeline)
-7. [番外：舆情与数据可视化](#7-番外舆情与数据可视化)
-8. [简历作品集搭建](#8-简历作品集搭建)
-9. [常见问题](#9-常见问题)
+3. [Skills 完整指南](#3-skills-完整指南)
+4. [模块一：视听素材批量处理](#4-模块一视听素材批量处理)
+5. [模块二：广告内容分析](#5-模块二广告内容分析)
+6. [模块三：Streamlit 交互仪表盘](#6-模块三streamlit-交互仪表盘)
+7. [模块四：自动化 Pipeline](#7-模块四自动化-pipeline)
+8. [模块五：让面试官眼前一亮](#8-模块五让面试官眼前一亮)
+9. [番外：舆情与数据可视化](#9-番外舆情与数据可视化)
+10. [简历作品集搭建](#10-简历作品集搭建)
+11. [常见问题](#11-常见问题)
 
 ---
 
@@ -113,7 +115,74 @@ claude
 
 ---
 
-## 3. 模块一：视听素材批量处理
+## 3. Skills 完整指南
+
+Skills 是写在 `~/.claude/skills/` 里的自定义指令包，用 `/skill名称` 触发，让 Claude 按照特定流程工作。本仓库包含 22 个 skills，分两大类。
+
+### 3.1 项目开发工作流 Skills（让 Claude 更聪明地写代码）
+
+这些 skills 的作用是**强迫 Claude 在动手之前先想清楚**，避免反复返工。对 vibe coding 新手来说特别有用。
+
+| Skill | 触发方式 | 什么时候用 |
+|-------|---------|-----------|
+| `using-superpowers` | 说"调用superpowers" | 开启完整结构化开发模式，自动链式调用下面的子 skills |
+| `brainstorming` | 自动（做任何新功能前） | Claude 先问清楚你想要什么，再动手，避免方向跑偏 |
+| `writing-plans` | 自动（复杂任务） | 把大任务拆成步骤，执行前先对齐 |
+| `test-driven-development` | 自动（写代码前） | 先写测试，再写实现，确保代码真的能跑 |
+| `systematic-debugging` | 遇到 bug 时 | 系统性找原因，不随机乱试 |
+| `verification-before-completion` | 说"完成"之前 | 验证代码真的能跑，不靠感觉说 done |
+| `executing-plans` | 有计划要执行时 | 按步骤执行，有子代理把关 |
+| `dispatching-parallel-agents` | 多个独立任务时 | 同时派多个 AI 并行处理，速度 N 倍提升 |
+| `planning-with-files-zh` | 说"文件规划" | 创建持久化任务文件，跨对话保留进度 |
+| `using-git-worktrees` | 开始新功能时 | 每个功能用独立工作区，互不干扰 |
+| `finishing-a-development-branch` | 功能做完后 | 收尾、清理、准备合并 |
+| `requesting-code-review` | 提交前 | 让 Claude 审查自己写的代码 |
+| `receiving-code-review` | 收到审查意见后 | 处理审查反馈，不盲目执行 |
+| `simplify` | 代码写完后 | 检查并简化代码 |
+
+**实际使用示例：**
+
+```
+# 开始一个新的仪表盘项目前，说：
+调用superpowers
+
+# Claude 会自动：
+# 1. 先用 brainstorming 问清楚你的需求
+# 2. 用 writing-plans 拆解任务步骤
+# 3. 执行时用 TDD 确保代码可靠
+# 4. 完成前用 verification 验证结果
+```
+
+### 3.2 论文阅读工作流 Skills（学术/研究用）
+
+这5个 skills 面向需要跟踪 AI 领域最新论文的用户，依赖 Obsidian vault。
+
+| Skill | 触发方式 | 功能 |
+|-------|---------|------|
+| `start-my-day` | `/start-my-day [日期]` | 每日 arXiv 论文推荐，前3篇自动深度分析 |
+| `paper-analyze` | `/paper-analyze [arXiv ID]` | 单篇论文深度分析，图文并茂生成笔记 |
+| `paper-search` | `/paper-search [关键词]` | 在已有论文笔记中搜索 |
+| `conf-papers` | `/conf-papers [年份] [会议]` | 搜索 CVPR/ICLR/NeurIPS 等顶会高引论文 |
+| `extract-paper-images` | `/extract-paper-images [ID]` | 从 arXiv 源码包提取论文高质量图片 |
+
+> 论文 skills 需要额外配置：设置 `OBSIDIAN_VAULT_PATH` 环境变量，详见 [skills/start-my-day/SKILL.md](skills/start-my-day/SKILL.md)
+
+### 3.3 Skills 安装方式
+
+```bash
+# 克隆本仓库
+git clone https://github.com/SH-Skylar-Liu/claude-code-guide.git
+
+# 复制 skills 到 Claude Code 配置目录
+cp -r claude-code-guide/skills/* ~/.claude/skills/
+
+# 验证安装（启动 Claude Code 后）
+# 输入 /brainstorming 或 说"调用superpowers"，看看有没有响应
+```
+
+---
+
+## 4. 模块一：视听素材批量处理
 
 ### 3.1 图片批量处理
 
@@ -201,7 +270,7 @@ videos.xlsx 里记录了视频文件名、开始时间、结束时间，
 
 ---
 
-## 4. 模块二：广告内容分析
+## 5. 模块二：广告内容分析
 
 ### 4.1 用 AI 批量分析广告创意
 
@@ -279,7 +348,7 @@ competitor_ads.xlsx 记录了竞品的广告投放信息：
 
 ---
 
-## 5. 模块三：Streamlit 交互仪表盘
+## 6. 模块三：Streamlit 交互仪表盘
 
 Streamlit 可以把分析结果做成可公开访问的网页——面试直接发链接，比截图专业10倍。
 
@@ -341,7 +410,7 @@ Streamlit 可以把分析结果做成可公开访问的网页——面试直接�
 
 ---
 
-## 6. 模块四：自动化 Pipeline
+## 7. 模块四：自动化 Pipeline
 
 把重复工作变成定时自动运行的流程，这是内容运营/数据岗非常看重的能力。
 
@@ -408,7 +477,114 @@ ad_analysis_pipeline/
 
 ---
 
-## 7. 番外：舆情与数据可视化
+## 8. 模块五：让面试官眼前一亮
+
+以下几项是大多数候选人做不到的，但用 Claude Code vibe coding 可以快速实现。
+
+### 8.1 GitHub Actions：Pipeline 跑在云端
+
+本地 cron 脚本有个致命问题——电脑关机就停了。GitHub Actions 让你的 pipeline **跑在云端，每天自动执行，完全免费**。面试时说"我的分析系统每天自动运行并发报告"，比"我写了个脚本"有力得多。
+
+```yaml
+# 在项目里创建 .github/workflows/daily_report.yml
+# 让 Claude Code 帮你写这个文件：
+```
+
+对 Claude 说：
+```
+帮我创建 GitHub Actions workflow 文件：
+- 每天北京时间早上9点自动运行
+- 步骤：
+  1. 安装 Python 依赖（requirements.txt）
+  2. 运行 scripts/fetch_data.py 拉取最新广告数据
+  3. 运行 scripts/analyze.py 生成分析报告
+  4. 把生成的图表文件提交到仓库的 output/ 目录
+- API Key 从 GitHub Secrets 读取，不要写死在代码里
+```
+
+生成的 workflow 推到 GitHub 后，Actions 自动每天执行，仓库里的报告自动更新。
+
+### 8.2 Gradio：30 秒做出可分享的 AI Demo
+
+Streamlit 适合数据仪表盘，Gradio 更适合**AI 功能演示**——上传一张广告图，立刻看到 AI 分析结果。部署到 Hugging Face Spaces，完全免费，有公开链接。
+
+```
+帮我用 Gradio 做一个广告创意分析 Demo：
+- 界面：左边上传图片，右边显示分析结果
+- 分析内容：调用 Claude API，分析广告的
+  创意类型、目标受众、情感基调、改进建议
+- 底部加一个"批量分析"Tab：上传多张图，
+  输出汇总表格并可以下载 Excel
+- 风格简洁，适合演示用
+
+部署命令：直接推到 Hugging Face Spaces
+```
+
+部署到 Hugging Face Spaces：
+
+```bash
+# 安装 huggingface_hub
+pip install huggingface_hub
+
+# 登录（去 huggingface.co 注册后获取 token）
+huggingface-cli login
+
+# 创建 Space 并推送
+# 去 huggingface.co/new-space 创建，选 Gradio 类型
+# 然后像推 GitHub 一样 git push
+```
+
+最终得到类似 `https://huggingface.co/spaces/你的名字/ad-analyzer` 的公开链接。
+
+### 8.3 多智能体并行处理：10 倍速分析
+
+普通方式分析100张广告图：逐张调用 API，等待，慢。
+
+用 `dispatching-parallel-agents` skill，Claude 会同时派出多个子代理并行处理——速度提升 N 倍，这是展示"懂 AI 工程"的好机会。
+
+对 Claude Code 说：
+```
+我有100张广告图需要用 Claude API 分析，
+帮我用多线程并行处理，同时运行10个线程，
+每个线程处理10张，结果合并到一个 Excel。
+加上进度条（tqdm），出错自动重试3次。
+```
+
+### 8.4 实时数据接入仪表盘
+
+把 Streamlit 仪表盘连接到真实数据源，而不是本地 Excel 文件：
+
+```
+帮我把 Streamlit 仪表盘改造成连接 Google Sheets 的实时版本：
+- 用 gspread 库读取 Google Sheets 数据
+- 每5分钟自动刷新（不用手动刷新页面）
+- 加一个"上次更新时间"显示
+- 支持在仪表盘里直接编辑数据并写回 Sheets
+```
+
+配合 Google Sheets 做数据源，团队任何人更新表格，仪表盘自动更新——这是真实工作场景里最有价值的能力。
+
+### 8.5 视频广告 AI 逐帧分析
+
+这是传媒岗几乎没人能做到的：
+
+```
+帮我写一个视频广告分析脚本：
+1. 用 FFmpeg 每秒提取1帧，共提取前30秒
+2. 把每帧图片用 Claude Vision API 分析：
+   画面内容、情绪基调、产品出现时间点
+3. 汇总成时间轴报告：
+   0-5秒：场景建立（xx画面）
+   5-15秒：产品展示（xx特点）
+   15-30秒：行动号召（xx文案）
+4. 生成可视化时间轴图表
+```
+
+这份"视频广告创意解构报告"作为作品展示，在广告/品牌岗面试里会非常突出。
+
+---
+
+## 9. 番外：舆情与数据可视化
 
 ### 社媒评论分析
 
@@ -432,7 +608,7 @@ ad_analysis_pipeline/
 
 ---
 
-## 8. 简历作品集搭建
+## 10. 简历作品集搭建
 
 ### 推荐的 3 个项目
 
@@ -459,7 +635,7 @@ ad_analysis_pipeline/
 
 ---
 
-## 9. 常见问题
+## 11. 常见问题
 
 **Q: FFmpeg 装了但找不到命令？**
 ```bash
