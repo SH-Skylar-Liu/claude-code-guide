@@ -1,445 +1,339 @@
-# Claude Code 入门指南
+# 传媒人的 Vibe Coding 指南
 
-> 从零开始配置 Claude Code，用 AI 做 Vibe Coding
+> 用 Claude Code 做传媒人里少有的技术加成——不需要科班背景，照样能用 AI 完成数据新闻、舆情分析、内容自动化
 
-本教程帮助你快速上手 [Claude Code](https://docs.anthropic.com/claude/docs/claude-code)——Anthropic 官方的 AI 编程 CLI 工具。你将学会：
+这份指南专门为**传媒背景**同学准备，目标不是"学编程"，而是用 AI 快速产出有传媒价值的作品放进简历。
 
-- 安装并配置 Claude Code
-- 获取 Anthropic API Key
-- 用 Claude Code 做 **Vibe Coding**（与 AI 对话写代码）
-- 安装增强 Skills，解锁更多工作流
+---
+
+## 为什么传媒人要会 Vibe Coding？
+
+传媒行业正在经历数字化转型，**能用 AI 工具做数据驱动内容**的人是稀缺的。你不需要成为程序员，但你需要：
+
+- 能用 AI 分析一批社交媒体数据，得出有新闻价值的结论
+- 能快速做出好看的数据可视化，放进报告/稿件
+- 能用 AI 批量处理内容（翻译、摘要、分类），效率10倍提升
+- 面试时能演示"我用 AI 完成了这个项目"
+
+这就是 **Vibe Coding**：你主导方向，AI 写代码，你理解和调整结果。
 
 ---
 
 ## 目录
 
-1. [前置条件](#1-前置条件)
-2. [安装 Claude Code](#2-安装-claude-code)
-3. [配置 API Key](#3-配置-api-key)
-4. [快速上手 Vibe Coding](#4-快速上手-vibe-coding)
-5. [安装 Skills](#5-安装-skills)
-6. [Skills 使用指南](#6-skills-使用指南)
-7. [进阶配置](#7-进阶配置)
+1. [安装 Claude Code（10分钟）](#1-安装-claude-code)
+2. [Vibe Coding 基本用法](#2-vibe-coding-基本用法)
+3. [实战一：舆情 / 社媒数据分析](#3-实战一舆情--社媒数据分析)
+4. [实战二：数据新闻可视化](#4-实战二数据新闻可视化)
+5. [实战三：内容批量处理](#5-实战三内容批量处理)
+6. [实战四：自动生成报告](#6-实战四自动生成报告)
+7. [简历作品集搭建](#7-简历作品集搭建)
 8. [常见问题](#8-常见问题)
 
 ---
 
-## 1. 前置条件
+## 1. 安装 Claude Code
 
-| 依赖 | 版本要求 | 说明 |
-|------|----------|------|
-| Node.js | ≥ 18.0 | [下载地址](https://nodejs.org/) |
-| npm | 随 Node.js 附带 | - |
-| Git | 任意版本 | [下载地址](https://git-scm.com/) |
-| Python | ≥ 3.8（可选） | 部分 Skills 需要 |
+### 第一步：装 Node.js
 
-验证安装：
+去 [nodejs.org](https://nodejs.org/) 下载 **LTS 版本**，一路下一步。
 
 ```bash
-node --version   # v18.0.0+
-npm --version    # 9.x+
-git --version    # 任意版本即可
+# 验证安装成功
+node --version   # 显示 v18.x 或更高就好
 ```
 
----
+### 第二步：装 Python（做数据分析用）
 
-## 2. 安装 Claude Code
+去 [python.org](https://www.python.org/downloads/) 下载 3.10+。
+
+> Windows 安装时勾选 **"Add Python to PATH"**！
+
+```bash
+# 安装常用库
+pip install pandas matplotlib seaborn jieba wordcloud requests beautifulsoup4 openpyxl
+```
+
+### 第三步：获取 Anthropic API Key
+
+1. 打开 [console.anthropic.com](https://console.anthropic.com/) 注册
+2. 左侧菜单 → **API Keys** → **Create Key** → 复制
+
+### 第四步：设置 API Key
+
+**macOS / Linux：**
+```bash
+echo 'export ANTHROPIC_API_KEY="sk-ant-api03-你的key"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Windows（PowerShell）：**
+```powershell
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "sk-ant-api03-你的key", "User")
+```
+设置完重启终端。
+
+### 第五步：安装并启动
 
 ```bash
 npm install -g @anthropic-ai/claude-code
+claude --version  # 验证安装
 ```
 
-验证安装：
-
+启动：
 ```bash
-claude --version
-```
-
-> **Windows 用户**：推荐在 Git Bash 或 WSL2 中使用 Claude Code，体验更好。
-
----
-
-## 3. 配置 API Key
-
-### 3.1 获取 API Key
-
-1. 访问 [Anthropic Console](https://console.anthropic.com/)
-2. 注册/登录账号
-3. 进入 **API Keys** 页面
-4. 点击 **Create Key**，复制生成的 key
-
-> API Key 格式：`sk-ant-api03-...`
-
-### 3.2 设置环境变量
-
-**macOS / Linux / Git Bash：**
-```bash
-export ANTHROPIC_API_KEY="sk-ant-api03-你的key"
-
-# 永久生效（加入 ~/.bashrc 或 ~/.zshrc）
-echo 'export ANTHROPIC_API_KEY="sk-ant-api03-你的key"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-**Windows (PowerShell)：**
-```powershell
-$env:ANTHROPIC_API_KEY = "sk-ant-api03-你的key"
-
-# 永久生效
-[System.Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "sk-ant-api03-你的key", "User")
-```
-
-### 3.3 首次启动
-
-```bash
+cd 你的工作文件夹
 claude
 ```
 
-首次运行会引导你完成授权配置。
+---
+
+## 2. Vibe Coding 基本用法
+
+你不需要懂代码，但要学会**描述清楚**。
+
+### 描述模板
+
+```
+我有 [什么数据]（格式：csv/xlsx/文本）
+我想得到 [什么结论 / 什么图表 / 什么输出]
+输出要求：[格式、语言、样式]
+```
+
+### 快速上手示例
+
+打开 Claude Code，直接说：
+
+```
+我想分析某微博话题的评论数据，文件是 comments.xlsx，
+里面有"用户名"、"评论内容"、"点赞数"、"发布时间"这几列。
+帮我：
+1. 看看评论的情感倾向（正面/负面/中性）分布
+2. 提取出现最多的关键词，做词云图
+3. 按时间看评论量的变化趋势
+生成3张图，保存为 png
+```
+
+遇到报错，直接把错误信息复制给 Claude 就行。
 
 ---
 
-## 4. 快速上手 Vibe Coding
+## 3. 实战一：舆情 / 社媒数据分析
 
-**Vibe Coding** = 用自然语言描述你想要的，让 Claude 直接写代码。
+这是传媒岗最有说服力的技能展示。
 
-### 4.1 打开项目
+### 3.1 微博/小红书评论分析
 
-```bash
-cd 你的项目目录
-claude
-```
-
-### 4.2 基本对话示例
+拿到评论数据后，对 Claude 说：
 
 ```
-你：帮我写一个 Python 函数，读取 CSV 文件并统计每列的缺失值数量
-
-Claude：[直接写出代码，解释逻辑，询问是否需要调整]
-
-你：加上异常处理，并输出百分比
-
-Claude：[修改代码，保持已有逻辑不变]
+帮我分析 weibo_comments.csv 的用户评论。
+要求：
+1. 用 jieba 做中文分词，去掉停用词（我、的、了、是、在...）
+2. 统计词频 Top30，做横向柱状图
+3. 做词云图，背景白色，词越高频颜色越深
+4. 用 SnowNLP 或规则判断情感（正/负/中），画饼图
+5. 全部图表保存为 png，适合放进报告
 ```
 
-### 4.3 实用快捷键
+### 3.2 话题传播分析
 
-| 快捷键 | 功能 |
-|--------|------|
-| `Enter` | 发送消息 |
-| `Shift + Enter` | 换行（不发送） |
-| `Ctrl + C` | 中断当前操作 |
-| `/help` | 查看所有命令 |
-| `/clear` | 清除对话历史 |
-| `/exit` | 退出 Claude Code |
-
-### 4.4 斜杠命令
-
-```bash
-/help          # 查看帮助
-/status        # 查看当前状态
-/compact       # 压缩对话历史（节省 token）
-/model         # 切换模型
+```
+我有一批新闻报道数据 news.xlsx，包含标题、发布媒体、发布时间、转发量。
+帮我分析：
+1. 哪些媒体发稿量最多（Top10 柱状图）
+2. 话题热度按天的变化（折线图，标出峰值）
+3. 转发量 Top5 的标题和来源（输出表格）
+把结论写成一段200字的分析摘要
 ```
 
-### 4.5 Vibe Coding 最佳实践
+### 3.3 竞品内容对比
 
-**✅ 好的提示方式：**
-- "帮我重构这个函数，让它更易读，但保持接口不变"
-- "这段代码有 bug，输入 `[1,2,3]` 时报 IndexError，帮我找原因"
-- "用 TypeScript 写一个 React 组件：输入框 + 提交按钮，点击后调用 `/api/submit`"
-
-**❌ 避免：**
-- 描述过于模糊（"帮我优化代码"）
-- 一次要求做太多不相关的事
-- 不告诉 Claude 你的项目技术栈
-
----
-
-## 5. 安装 Skills
-
-Skills 是对 Claude Code 的功能扩展，以自定义 `/命令` 的形式运行。
-
-### 5.1 Skills 目录
-
-Skills 安装在 `~/.claude/skills/` 目录下，每个 skill 是一个子目录，包含 `SKILL.md` 和可选的脚本文件。
-
-### 5.2 安装方式
-
-**方法一：克隆本仓库中的 Skills**
-
-```bash
-# 克隆本仓库
-git clone https://github.com/Whalefall-LSH/claude-code-guide.git
-cd claude-code-guide
-
-# 将 skills 复制到 Claude Code 配置目录
-cp -r skills/* ~/.claude/skills/
 ```
-
-**方法二：手动安装单个 Skill**
-
-```bash
-# 以 start-my-day 为例
-mkdir -p ~/.claude/skills/start-my-day
-# 将 SKILL.md 和 scripts/ 复制进去
-```
-
-### 5.3 本仓库包含的 Skills
-
-| Skill | 命令 | 功能 |
-|-------|------|------|
-| `start-my-day` | `/start-my-day` | 每日 arXiv 论文推荐 |
-| `paper-analyze` | `/paper-analyze` | 单篇论文深度分析 |
-| `paper-search` | `/paper-search` | 搜索已有论文笔记 |
-| `conf-papers` | `/conf-papers` | 顶会论文推荐（CVPR/ICLR 等） |
-| `extract-paper-images` | `/extract-paper-images` | 提取论文图片 |
-
-### 5.4 Skills 依赖配置
-
-论文相关 Skills 需要额外配置：
-
-**a. 设置 Obsidian Vault 路径（必需）**
-
-```bash
-# macOS/Linux
-export OBSIDIAN_VAULT_PATH="/path/to/your/obsidian/vault"
-
-# Windows (Git Bash)
-export OBSIDIAN_VAULT_PATH="D:/ObsidianVault"
-```
-
-建议加入 shell 配置文件（`~/.bashrc`）永久生效。
-
-**b. 创建研究兴趣配置文件（`start-my-day` 需要）**
-
-路径：`$OBSIDIAN_VAULT_PATH/99_System/Config/research_interests.yaml`
-
-```yaml
-language: "zh"    # 输出语言：zh 或 en
-
-research_areas:
-  - name: "大语言模型"
-    keywords:
-      - "large language model"
-      - "LLM"
-      - "GPT"
-      - "instruction tuning"
-    arxiv_categories:
-      - "cs.CL"
-      - "cs.AI"
-
-  - name: "多模态"
-    keywords:
-      - "multimodal"
-      - "vision language"
-      - "CLIP"
-    arxiv_categories:
-      - "cs.CV"
-      - "cs.MM"
-```
-
-**c. 安装 Python 依赖（`start-my-day` / `conf-papers` 需要）**
-
-```bash
-pip install pyyaml requests
+我有两个公众号的文章数据，A账号.xlsx 和 B账号.xlsx，
+各有标题、发布日期、阅读量、点赞数字段。
+帮我对比：
+1. 两个账号的平均互动率（阅读量/点赞数）
+2. 各自的发文频率
+3. 标题常用词有什么不同（并排词云）
+用一张 2x2 的组合图展示
 ```
 
 ---
 
-## 6. Skills 使用指南
+## 4. 实战二：数据新闻可视化
 
-### 6.1 `start-my-day` — 每日论文推荐
+数据新闻是传媒+技术结合最直接的方向。
 
-每天早上运行，自动从 arXiv 搜索最新论文，生成 Obsidian 推荐笔记。
+### 4.1 政务/公开数据可视化
 
-```bash
-# 基本用法（生成今天的推荐）
-/start-my-day
-
-# 指定日期
-/start-my-day 2026-03-20
+```
+我有国家统计局的城镇失业率数据 unemployment.xlsx，
+按季度记录了2019-2024年各地数据。
+帮我做：
+1. 全国趋势折线图（标出疫情期间的异常值）
+2. 2024年各省失业率地图热力图（用 pyecharts 或 plotly）
+3. 输出可以在网页展示的 HTML 文件
+图表风格参考《经济学人》：简洁、深色线、浅灰背景
 ```
 
-**输出**：在 Obsidian vault 的 `10_Daily/` 目录生成 `YYYY-MM-DD论文推荐.md`，包含：
-- 今日概览（研究趋势、热点分析、阅读建议）
-- 前3篇论文：深度分析 + 图片 + 详细报告
-- 其余论文：基本信息摘要
+### 4.2 交互式图表（放作品集最好用）
 
-### 6.2 `paper-analyze` — 深度分析论文
-
-对单篇论文做全面分析，生成图文并茂的 Obsidian 笔记。
-
-```bash
-# 用 arXiv ID
-/paper-analyze 2312.12456
-
-# 用论文标题关键词
-/paper-analyze "Attention is All You Need"
+```
+把这个静态折线图改成 plotly 交互式版本：
+- 鼠标悬停显示具体数值
+- 支持框选放大某段时间
+- 图例可以点击显示/隐藏
+- 保存为 HTML，直接在浏览器打开
 ```
 
-**输出**：在 `20_Research/Papers/[领域]/` 下生成详细笔记，包含：
-- 论文背景、问题定义
-- 方法架构（含图片）
-- 实验结果分析
-- 与相关工作对比
+### 4.3 信息图表风格
 
-### 6.3 `paper-search` — 搜索论文笔记
-
-在已整理的论文笔记中快速搜索。
-
-```bash
-# 关键词搜索
-/paper-search "contrastive learning"
-
-# 搜索特定作者
-/paper-search "Yann LeCun"
-
-# 组合搜索
-/paper-search "多模态" "检索增强"
 ```
-
-### 6.4 `conf-papers` — 顶会论文推荐
-
-搜索顶级学术会议（CVPR/ICLR/NeurIPS/ICML/AAAI/ICCV/ECCV）的高引用论文。
-
-```bash
-# 使用默认配置（年份和会议从 conf-papers.yaml 读取）
-/conf-papers
-
-# 指定年份
-/conf-papers 2024
-
-# 指定年份和会议
-/conf-papers 2024 ICLR,NeurIPS
-/conf-papers 2023 CVPR
+帮我做一个横向条形图，展示各平台的月活用户数对比，
+风格要求：
+- 参考 Reuters/Bloomberg 的新闻图表风格
+- 每条数据右侧显示具体数字
+- 用品牌色区分各平台（微信绿、微博橙、抖音黑）
+- 底部加数据来源注释
+- 输出 PNG，分辨率300dpi，适合印刷
 ```
-
-**配置文件**：`~/.claude/skills/conf-papers/conf-papers.yaml`
-```yaml
-keywords:
-  - "large language model"
-  - "multimodal"
-excluded_keywords:
-  - "3D"
-  - "survey"
-default_year: 2024
-default_conferences:
-  - "ICLR"
-  - "NeurIPS"
-  - "ICML"
-top_n: 10
-```
-
-### 6.5 `extract-paper-images` — 提取论文图片
-
-从 arXiv 论文中提取高质量图片（优先从源码包获取，而非 PDF）。
-
-```bash
-/extract-paper-images 2312.12456
-```
-
-**输出**：图片保存至 `20_Research/Papers/[领域]/[论文标题]/images/`，并生成 `index.md` 索引。
-
-> 通常不需要手动调用——`start-my-day` 和 `paper-analyze` 会自动调用此 skill。
 
 ---
 
-## 7. 进阶配置
+## 5. 实战三：内容批量处理
 
-### 7.1 全局 CLAUDE.md（自定义 AI 行为）
+用 AI 批量处理内容，效率提升最明显的地方。
 
-在 `~/.claude/CLAUDE.md` 中写入指令，对所有项目生效：
-
-```markdown
-# 我的 Claude Code 配置
-
-## 基本规则
-- 回答简洁直接，不要废话
-- 代码修改前先读懂现有代码
-- 优先修改现有文件，不随意新建文件
-
-## Skill 调用规则
-- 只在我明确要求时调用 Skills
-- /start-my-day：我说"开始新的一天"时调用
-```
-
-### 7.2 项目级 CLAUDE.md
-
-在项目根目录创建 `CLAUDE.md`，只对当前项目生效：
-
-```markdown
-# 项目说明
-
-这是一个 FastAPI + PostgreSQL 后端项目。
-
-## 技术栈
-- Python 3.11
-- FastAPI
-- SQLAlchemy
-- PostgreSQL
-
-## 代码规范
-- 使用 Black 格式化
-- 所有函数必须有类型注解
-- 测试覆盖率 > 80%
-```
-
-### 7.3 模型选择
-
-```bash
-# 在 Claude Code 中切换模型
-/model
-
-# 可选模型（截至 2025 年）：
-# - claude-opus-4-6（最强，适合复杂任务）
-# - claude-sonnet-4-6（均衡，推荐日常使用）
-# - claude-haiku-4-5（最快，适合简单任务）
-```
-
-### 7.4 Memory 系统
-
-Claude Code 支持持久化记忆，跨对话保留重要信息：
+### 5.1 批量翻译
 
 ```
-你：记住我用 Python 3.11，项目用 pytest 做测试
-
-Claude：[保存到记忆系统，下次对话自动加载]
+我有 articles.xlsx，B列是英文新闻标题，C列是英文摘要。
+用 DeepL API 或调用大模型，帮我在D列填入中文标题，E列填入中文摘要。
+有200行，注意别触发API限频，每次请求之间停0.5秒。
 ```
+
+### 5.2 批量摘要
+
+```
+文件夹 /articles/ 里有50个 .txt 文件，每个是一篇新闻全文。
+帮我给每篇生成一个：
+1. 50字以内的一句话摘要
+2. 3个关键词标签
+3. 判断立场：中性/正面/批评性
+
+结果输出到 summary.xlsx，每行一篇文章
+```
+
+### 5.3 评论自动分类
+
+```
+comments.csv 里有1000条用户评论，帮我把它们自动分类成：
+- 产品反馈
+- 情感表达
+- 提问/求助
+- 广告/无关
+
+用关键词规则先做一遍，列出我需要人工核对的模糊案例
+```
+
+---
+
+## 6. 实战四：自动生成报告
+
+### 6.1 数据分析报告
+
+```
+我做完了数据分析，生成了3张图和一个 summary.xlsx。
+帮我生成一份 Word 报告（用 python-docx）：
+- 标题：XX话题舆情分析报告（2024年3月）
+- 包含：概述、数据来源说明、3张图（各配200字分析）、结论与建议
+- 格式专业，适合给甲方或领导看
+```
+
+### 6.2 周报自动化
+
+```
+每周我都要写内容数据周报，数据在 weekly_data.xlsx。
+帮我写一个脚本：
+1. 读取本周数据，自动计算同比/环比变化
+2. 把变化超过20%的指标标红
+3. 生成固定格式的 Word 周报模板，我只需要填结论部分
+```
+
+---
+
+## 7. 简历作品集搭建
+
+### 推荐的 3 个项目方向
+
+**项目一：社媒话题舆情分析**
+- 数据：找一个微博热搜话题，手动或爬取评论
+- 产出：情感分析 + 传播趋势图 + 关键词词云 + 300字分析结论
+- 亮点：展示你懂传播规律，还会用技术量化分析
+
+**项目二：数据新闻可视化**
+- 数据：用国家统计局/政府开放数据平台的公开数据
+- 产出：交互式 HTML 图表 + 配套文字报道
+- 亮点：证明你能做数据驱动的内容生产
+
+**项目三：公众号/媒体账号分析**
+- 数据：用现有工具导出目标媒体的文章数据
+- 产出：竞品分析报告 + 选题建议
+- 亮点：对找内容运营、新媒体编辑岗位最有说服力
+
+### 展示方式
+
+1. **GitHub 仓库**：放代码 + README 说明项目背景和结论
+2. **截图放简历**：选最好看的一两张图表
+3. **HTML 图表**：部署到 GitHub Pages，有可访问的链接更好
+4. **面试时讲故事**：不是"我用 Python 做了分析"，而是"我发现这个话题在 X 时间节点爆发，原因是..."
 
 ---
 
 ## 8. 常见问题
 
-**Q: `claude` 命令找不到？**
-```bash
-# 检查 npm 全局安装路径是否在 PATH 中
-npm bin -g
-# 将该路径加入 PATH
+**Q: 我不懂代码，Claude 写出来的我看不懂？**
+
+直接问：
+```
+解释一下这段代码在做什么，用非技术语言，我是传媒专业的
 ```
 
-**Q: API 请求报错 401？**
-- 检查 `ANTHROPIC_API_KEY` 是否正确设置
-- 确认 key 未过期，余额是否充足
+**Q: 代码报错了？**
 
-**Q: `start-my-day` 报找不到配置文件？**
-- 确认 `OBSIDIAN_VAULT_PATH` 已设置
-- 确认 `research_interests.yaml` 路径正确：`$OBSIDIAN_VAULT_PATH/99_System/Config/research_interests.yaml`
+把完整报错信息复制给 Claude：
+```
+运行后报错：
+[报错内容]
+帮我修复，并解释为什么会出这个错
+```
 
-**Q: Skills 命令不生效？**
-- 确认 skill 目录在 `~/.claude/skills/<skill-name>/SKILL.md`
-- 重启 Claude Code
+**Q: 想要更好看的图表配色？**
+```
+图表配色改成适合新闻报道的专业风格，参考《纽约时报》的数据图表
+```
 
-**Q: Windows 下路径问题？**
-- 推荐使用 Git Bash 或 WSL2
-- 路径使用正斜杠：`D:/ObsidianVault`（而非 `D:\ObsidianVault`）
+**Q: 数据涉及隐私怎么办？**
+
+用脱敏数据测试代码，确认流程对了再换真实数据。
+对 Claude 说：
+```
+帮我生成100条模拟的微博评论数据，用于测试代码
+包含：用户名、评论内容、点赞数、发布时间字段
+```
+
+**Q: API 用完了余额不够？**
+
+- 日常分析推荐 `claude-sonnet` 模型，性价比最高
+- 充值在 [console.anthropic.com](https://console.anthropic.com/) → Billing
 
 ---
 
-## 贡献
+## 一句话核心提示
 
-欢迎提 Issue 或 PR！如果你有自己的 Skills，也欢迎分享。
+> 传媒人用 Vibe Coding 的优势不在于"会写代码"，而在于**你知道分析什么、结论是什么、怎么讲故事**——这是纯技术背景的人做不到的。
 
-## License
+---
 
-MIT
+> 问题或改进建议：[提 Issue](https://github.com/Whalefall-LSH/claude-code-guide/issues)
