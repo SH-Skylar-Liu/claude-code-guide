@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Skill runtime outputs
+skills/start-my-day/arxiv_filtered*.json
+skills/start-my-day/existing_notes_index.json
+skills/conf-papers/conf_papers_filtered.json
+skills/conf-papers/existing_notes_index.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
